@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useReducer, useState } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useReducer, useState } from 'react';
 import './App.css';
 
 // interface MyButtonProps {
@@ -76,6 +76,19 @@ const useGetComplexObject = () => {
   return object;
 }
 
+function Form() {
+  const [value, setValue] = useState("Change me");
+  const handleChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>((event) => {
+    setValue(event.currentTarget.value);
+  }, [setValue])
+
+  return (
+    <>
+      <input type={value} onChange={handleChange} />
+      <p>Value: {value}</p>
+    </>
+  )
+}
 
 export default function App() {
   const [state, dispatch] = useReducer(stateReducer, initialState);
@@ -96,6 +109,7 @@ export default function App() {
       <Context.Provider value={object}>
         <MyComponent />
       </Context.Provider>
+      <a><Form /></a>
     </div>
   );
 }
