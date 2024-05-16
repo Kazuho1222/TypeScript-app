@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import { createContext, useContext, useMemo, useReducer, useState } from 'react';
 import './App.css';
 
 // interface MyButtonProps {
@@ -48,17 +48,54 @@ function stateReducer(state: State, action: CounterAction): State {
 //   );
 // }
 
+type Theme = "light" | "dark" | "system";
+const ThemeContext = createContext<Theme>("system");
+
+const useGetTheme = () => useContext(ThemeContext);
+
+
+function MyComponent() {
+  const object = useGetComplexObject();
+
+  return (
+    <div>
+      <p>Current object:{object.kind}</p>
+    </div>
+  );
+}
+
+type ComplexObject = {
+  kind: string
+};
+
+const Context = createContext<ComplexObject | null>(null);
+
+const useGetComplexObject = () => {
+  const object = useContext(Context);
+  if (!object) { throw new Error("useGetComplexObject must be used within a Provider") }
+  return object;
+}
+
+
 export default function App() {
   const [state, dispatch] = useReducer(stateReducer, initialState);
 
   const addFive = () => dispatch({ type: "setCount", value: state.count + 5 });
   const reset = () => dispatch({ type: "reset" });
+
+  const [theme, setTheme] = useState<Theme>("light");
+
+  const object = useMemo(() => ({ kind: "complex" }), []);
+
   return (
     <div>
       <h1>Welcome to my counter</h1>
       <p>Count:{state.count}</p>
       <button onClick={addFive}>Add 5</button>
       <button onClick={reset}>Reset</button>
+      <Context.Provider value={object}>
+        <MyComponent />
+      </Context.Provider>
     </div>
   );
 }
